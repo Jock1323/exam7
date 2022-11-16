@@ -6,7 +6,7 @@ const getProducts=(req,res,next)=>{
  try {
     if(categoryId){
         const allCategories=read("categories.json")
-        const allSubcategories=read("subcategories.json")
+        const allSubcategories=read("subCategories.json")
         const allProducts=read("products.json")
         const foundedSubcategories=allSubcategories.filter(subcategory=>subcategory.categoryId==categoryId)
         const foundedProducts=[]
@@ -109,7 +109,6 @@ const postProduct=async(req,res,next)=>{
      const {token}=req.headers
      const id=await verify(token).catch(err=>next(new customError(400,err.message)))
      if(id){
-        // { "productId": 7, "subCategoryId": 1, "model": "nokia", "productName": "1202 ", "color": "red", "price": "20" }
          const {productId,subCategoryId,model,productName,color,price}=req.filteredBody
      const allProducts=read("products.json")
      allProducts.push({

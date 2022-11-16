@@ -81,7 +81,7 @@
     /products?subCategoryId=1&model=samsung
     /products?model=samsung
     /products/1
-
+https://myexam7.herokuapp.com/products/model=re
 
 
 

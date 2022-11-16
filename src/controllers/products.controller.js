@@ -4,7 +4,22 @@ import {verify} from "../utils/jwt.js"
 const getProducts=(req,res,next)=>{
     const {categoryId,model,subCategoryId}=req.filteredQuery
  try {
-    if(categoryId){
+    if(subCategoryId && model){
+        const foundedProducts=read("products.json").filter(product=>product.subCategoryId==subCategoryId && product.model.toLowerCase().includes(model.toLowerCase())).filter(product=>delete product.subCategoryId)
+        if(foundedProducts.length<=0){
+            res.status(404).json({
+                message:"not found",
+                data:[]
+            })
+        }
+      else{
+        res.status(200).json({
+            message:"founded products",
+            data:foundedProducts
+        })
+      }
+    }
+    else if(categoryId){
         const allCategories=read("categories.json")
         const allSubcategories=read("subCategories.json")
         const allProducts=read("products.json")
@@ -26,21 +41,6 @@ const getProducts=(req,res,next)=>{
                 data:[]
             })
         }
-    }
-    else if(subCategoryId && model){
-        const foundedProducts=read("products.json").filter(product=>product.subCategoryId==subCategoryId && product.model.toLowerCase().includes(model.toLowerCase())).filter(product=>delete product.subCategoryId)
-        if(foundedProducts.length<=0){
-            res.status(404).json({
-                message:"not found",
-                data:[]
-            })
-        }
-      else{
-        res.status(200).json({
-            message:"founded products",
-            data:foundedProducts
-        })
-      }
     }
     else if(model){
         const foundedProducts=read("products.json").filter(product=>product.model.toLowerCase().includes(model.toLowerCase())).filter(product=>delete product.subCategoryId)
@@ -137,15 +137,22 @@ const postProduct=async(req,res,next)=>{
          const {subCategoryId,model,productName,color,price}=req.filteredBody
      const allProducts=read("products.json")
          const foundedProduct=allProducts.find(product=>product.productId==id)
-         foundedProduct.subCategoryId=subCategoryId || foundedProduct.subCategoryId
+         if(foundedProduct){
+            foundedProduct.subCategoryId=subCategoryId || foundedProduct.subCategoryId
          foundedProduct.model=model || foundedProduct.model,
          foundedProduct.productName=productName || foundedProduct.productName
          foundedProduct.color=color || foundedProduct.color
          foundedProduct.price=price || foundedProduct.price
-     write("products.json",allProducts)
-     res.status(201).json({
-         message:"product updated"
-     })
+         write("products.json",allProducts)
+         res.status(201).json({
+             message:"product updated"
+         })
+         }
+         else{
+            res.status(400).json({
+                message:"product not founded"
+            })
+         }
      }
     } catch (error) {
      next(new customError(500,error.message))

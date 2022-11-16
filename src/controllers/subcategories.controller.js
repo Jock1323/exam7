@@ -62,12 +62,19 @@ const putSubCategory=async(req,res,next)=>{
         const {subCategoryName,categoryId}=req.filteredBody
     const allSubCategories=read("subCategories.json")
         const foundedSubCategory=allSubCategories.find(subcategory=>subcategory.subCategoryId==id)
-        foundedSubCategory.categoryId=categoryId || foundedSubCategory.categoryId
-        foundedSubCategory.subCategoryName=subCategoryName || foundedSubCategory.subCategoryName
-    write("subCategories.json",allSubCategories)
-    res.status(201).json({
-        message:"subcategory updated"
-    })
+        if(foundedSubCategory){
+            foundedSubCategory.categoryId=categoryId || foundedSubCategory.categoryId
+            foundedSubCategory.subCategoryName=subCategoryName || foundedSubCategory.subCategoryName
+        write("subCategories.json",allSubCategories)
+        res.status(201).json({
+            message:"subcategory updated"
+        })
+        }
+        else{
+            res.status(400).json({
+                message:"subcategory not found"
+            })
+        }
     }
    } catch (error) {
     next(new customError(500,error.message))

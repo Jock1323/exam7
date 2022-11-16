@@ -58,11 +58,18 @@ const putCategory=async(req,res,next)=>{
         const {categoryName}=req.filteredBody
     const allCategories=read("categories.json")
         const foundedCategory=allCategories.find(category=>category.categoryId==id)
-        foundedCategory.categoryName=categoryName || foundedCategory.categoryName
-    write("categories.json",allCategories)
-    res.status(201).json({
-        message:"category updated"
-    })
+        if(foundedCategory){
+            foundedCategory.categoryName=categoryName || foundedCategory.categoryName
+            write("categories.json",allCategories)
+            res.status(201).json({
+                message:"category updated"
+            })
+        }
+        else{
+            res.status(400).json({
+                message:"category not found"
+            })
+        }
     }
    } catch (error) {
     next(new customError(500,error.message))
